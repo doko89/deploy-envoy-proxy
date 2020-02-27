@@ -1,0 +1,10 @@
+- name: deploy ubuntu
+  include_tasks: ubuntu.yml
+  when: ansible_os_family == 'Debian'
+
+- name: deploy RedHat or CentOS
+  include_tasks: centos.yml
+  when: ansible_os_family == 'RedHat'
+
+- name: config envoy
+  include_tasks: config.yml

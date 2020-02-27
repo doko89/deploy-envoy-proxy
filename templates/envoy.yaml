@@ -1,0 +1,39 @@
+admin:
+  access_log_path: /tmp/admin_access.log
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 9901 }
+
+# Envoy proxy config
+static_resources:
+  listeners:
+  - name: http
+    address:
+      socket_address:
+        protocol: TCP
+        address: 0.0.0.0
+        port_value: 80
+    filter_chains:
+    - filters:
+      - name: envoy.http_connection_manager
+        config:
+          stat_prefix: ingress_http
+          route_config:
+            virtual_hosts:
+            - name: local_service
+              domains: ['*']
+              routes:
+              - match:
+                  prefix: "/"
+                route:
+                  cluster: backend
+          http_filters:
+          - name: envoy.router
+
+  clusters:
+  - name: backend
+    type: STATIC
+    connect_timeout: 1s
+    hosts:
+      - socket_address:
+          address: 192.168.212.92
+          port_value: 31561

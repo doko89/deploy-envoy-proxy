@@ -1,0 +1,23 @@
+- name: create directory
+  file:
+    path: /etc/envoy
+    state: directory
+
+- name: copy envoy config
+  copy:
+    src: "{{ item }}"
+    dest: /etc/envoy/
+  with_items:
+    - templates/envoy.yaml
+
+- name: create envoy systemd file
+  copy:
+    src: envoy.service
+    dest: /etc/systemd/system/envoy.service
+
+- name: enable envoy systemd
+  systemd:
+    daemon_reload: yes
+    name: envoy
+    enabled: yes
+    state: restarted
